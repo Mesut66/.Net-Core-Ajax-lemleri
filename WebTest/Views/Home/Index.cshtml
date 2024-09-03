@@ -1,0 +1,154 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="text-center">
+    <button type="button" id="btnGetList" class="btn btn-outline-success mb-3"> Student List</button>
+    <button type="button" id="btnGetSingle" class="btn btn-outline-primary mb-3"> Student Get</button>
+    <button type="button" id="btnGetDelete" class="btn btn-outline-danger mb-3"> Student Delete</button>
+
+    <div id="studentList" class="container">
+    </div>
+    <br />
+
+</div>
+
+<div>
+    <span>Student ID</span>
+    <input type="text" id="studentId" class="form-control col-6 mb-3" />
+</div>
+
+
+<div>
+    <button type="button" id="btnAddSingle" class="btn btn-secondary mb-3">Add Student</button><br />
+    <button type="button" id="btnGetUpdate" class="btn btn-warning mb-3"> Student Update</button><br />
+    <span>Id</span>
+    <input type="text" class="form-control col-6" id="txtStudentId" /><br />
+    <span>Name</span>
+    <input type="text" class="form-control col-6" id="txtStudentName" /><br />
+    <span>Gender</span>
+    <input type="text" class="form-control col-6" id="txtStudentGender" /><br />
+    <span>Age</span>
+    <input type="text" class="form-control col-6" id="txtStudentAge" /><br />
+</div>
+@section scripts {
+    <script>
+
+        $("#btnGetList").click(function () {
+            $.ajax({
+                contentType: "application/json",
+                dataType: "json",
+                type: "Get",
+                url: "/Home/StudentList",
+                success: function (response) {
+                    let list = jQuery.parseJSON(response)
+                    let listTable = "<table class = table table - bordered><tr><th>ID</th> <th>NAME</th><th>GENDER</th><th>AGE</th></tr>"
+                    $.each(list, function (index, emp) {
+                        listTable += `<tr> <td> ${emp.Id}</td> <td> ${emp.Name}</td><td> ${emp.Gender}</td><td> ${emp.Age}</td></tr>`;
+                    });
+                    listTable += "</table>"
+                    $('#studentList').html(listTable);
+                },
+                error: function () {
+                    alert("Content load failed!!");
+                }
+            });
+        });
+
+
+        $("#btnGetSingle").click(function () {
+
+            let id = $("#studentId").val();
+            $.ajax({
+                contentType: "application/json",
+                dataType: "json",
+                type: "Get",
+                url: "/Home/GetStudentById",
+                data: { studentId: id },
+                success: function (response) {
+                    let list = jQuery.parseJSON(response)
+
+                    let listTable = `<table class = table table - bordered><tr><th>ID</th> <th>NAME</th><th>GENDER</th><th>AGE</th></tr>
+                                                                        <tr> <td> ${list.Id}</td> <td> ${list.Name}</td><td> ${list.Gender}</td><td> ${list.Age}</td></tr></table>`;
+                    $('#studentList').html(listTable);
+                },
+                error: function () {
+                    alert("Content load failed!!");
+                }
+            });
+        });
+
+
+        $("#btnAddSingle").click(function () {
+
+            let data = {
+                Id: $("#txtStudentId").val(),
+                Name: $("#txtStudentName").val(),
+                Gender: $("#txtStudentGender").val(),
+                Age: $("#txtStudentAge").val()
+            };
+
+            $.ajax({
+                type: "Post",
+                url: "/Home/AddStudent",
+                data: data,
+                success: function (response) {
+
+                    let result = jQuery.parseJSON(response)
+                    alert("Successfully added");
+                },
+                error: function () {
+                    alert("Content load failed!!");
+                }
+            });
+        });
+
+
+        $("#btnGetUpdate").click(function () {
+
+            let data = {
+                Id: $("#txtStudentId").val(),
+                Name: $("#txtStudentName").val(),
+                Gender: $("#txtStudentGender").val(),
+                Age: $("#txtStudentAge").val()
+            };
+
+            $.ajax({
+                type: "Post",
+                url: "/Home/UpdateStudent",
+                data: data,
+                success: function (response) {
+
+                    let result = jQuery.parseJSON(response)
+                    alert("Successfully updated");
+                },
+                error: function () {
+                    alert("Content load failed!!");
+                }
+            });
+        });
+
+
+
+        $("#btnGetDelete").click(function () {
+
+            let id = $("#studentId").val();
+            $.ajax({
+                type: "Post",
+                url: "/Home/DeleteStudent",
+                data: { studentId: id },
+                success: function (response) {
+                    let list = jQuery.parseJSON(response)
+
+                    alert("Successfully deleted");
+                },
+                error: function () {
+                    alert("Content load failed!!");
+                }
+            });
+        });
+    </script>
+}
+
